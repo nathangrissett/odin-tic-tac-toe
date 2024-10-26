@@ -116,11 +116,6 @@ function GameController(
 
     const playRound = (column, row) => {
 
-        if (gameOver) {
-            console.log('Game is over! Start a new game to play again.');
-            return;
-        }
-
         console.log(
             `Dropping ${getActivePlayer().name}'s marker into column ${column} row ${row}...`
         );
