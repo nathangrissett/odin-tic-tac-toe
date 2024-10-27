@@ -165,59 +165,82 @@ function GameController(
 
 //DOM controls
 
-const newGame = document.querySelector("#new-game");
-let playerOneText = document.querySelector("#player1").value;
-let playerTwoText = document.querySelector("#player2").value;
-const changePlayer1 = document.querySelector("#change-player1");
-const changePlayer2 = document.querySelector("#change-player2");
-let game;
-const player1Marker = "X";
-const player2Marker = "O";
-let count = 0;
-const squares = document.querySelectorAll('.square');
-const rows = document.querySelectorAll('div.row');
-let gameEnd = true;
+const GameModule = function() {
 
-function isOdd(num) { return num % 2; }
+    //Private variables
 
-newGame.addEventListener('click', function() {
-    game = GameController(playerOneText, playerTwoText);
-    count = 0;
-    for (const square of squares) {
-        square.textContent = "";
+    let game;
+    let playerOneText = document.querySelector("#player1").value;
+    let playerTwoText = document.querySelector("#player2").value;
+    let count = 0;
+    let gameEnd = true;
+    const player1Marker = "X";
+    const player2Marker = "O";
+
+    //Cache DOM elements
+
+    const newGame = document.querySelector("#new-game");
+    const changePlayer1 = document.querySelector("#change-player1");
+    const changePlayer2 = document.querySelector("#change-player2");
+    const squares = document.querySelectorAll('.square');
+    const rows = document.querySelectorAll('div.row');
+
+    //Private functions
+
+    function isOdd(num) { return num % 2; }
+
+    function bindEvents() {
+        newGame.addEventListener('click', handleNewGame);
+        bindPlayerChanges();
+        bindSquareClicks();
     }
-    gameEnd = true;
-    for (const row of rows) {
-        row.style.visibility = "visible";
+
+    function handleNewGame() {
+        game = GameController(playerOneText, playerTwoText);
+        count = 0;
+        for (const square of squares) {
+            square.textContent = "";
+        }
+        gameEnd = true;
+        for (const row of rows) {
+            row.style.visibility = "visible";
+        }
     }
-});
 
-[changePlayer1, changePlayer2].forEach((button, index) => {
-    button.addEventListener('click', function() {
-        const playerInput = document.querySelector(`#player${index + 1}`);
-        if (index === 0) {
-            playerOneText = playerInput.value;
-        } else {
-            playerTwoText = playerInput.value;
-        }
-    });
-});
+    function bindPlayerChanges() {
+        [changePlayer1, changePlayer2].forEach((button, index) => {
+            button.addEventListener('click', function() {
+                const playerInput = document.querySelector(`#player${index + 1}`);
+                if (index === 0) {
+                    playerOneText = playerInput.value;
+                } else {
+                    playerTwoText = playerInput.value;
+                }
+            });
+        });
+    }
 
-for (const square of squares) {
-    square.addEventListener('click', function() {
-        const [row, col] = square.id.split('-').map(Number);
+    function bindSquareClicks() {
+        for (const square of squares) {
+            square.addEventListener('click', function() {
+                const [row, col] = square.id.split('-').map(Number);
 
-        if (square.textContent == "" && gameEnd) {
-            game.playRound(row, col);
-            if (!isOdd(count) && gameEnd) {
-                square.textContent = player1Marker;
-            } else if (isOdd(count) && gameEnd) {
-                square.textContent = player2Marker;
-            }
-            count++;
+                if (square.textContent == "" && gameEnd) {
+                    game.playRound(row, col);
+                    if (!isOdd(count) && gameEnd) {
+                        square.textContent = player1Marker;
+                    } else if (isOdd(count) && gameEnd) {
+                        square.textContent = player2Marker;
+                    }
+                    count++;
+                }
+                if (gameOver == true) {
+                    gameEnd = false;
+                }
+            });
         }
-        if (gameOver == true) {
-            gameEnd = false;
-        }
-    });
-}
+    }
+
+    bindEvents();
+
+}();
